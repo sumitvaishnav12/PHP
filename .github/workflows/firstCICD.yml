@@ -22,11 +22,11 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ap-south-1
+        
+    - name: Deploy via SSM  
       run: |
-        echo "${{ secrets.EC2_SSH_KEY }}" > key.pem
-        chmod 600 key.pem
-        ssh -i key.pem -o StrictHostKeyChecking=no ${{ env.EC2_USER }}@${{ env.EC2_HOST }} << 'EOF'
-          cd /var/www/html/PHP  # Update this to the directory where your PHP app should be deployed
-          git pull origin master
-          # Optional: run any other deployment commands, e.g., composer install if you're using Composer
-        EOF
+        instance_id=$(aws ssm describe-instance-information --query "InstanceInformationList[0].InstanceId" --output text)
+        aws ssm send-command \
+          --document-name "AWS-RunShellScript" \
+          --targets "Key=instanceids,Values=$instance_id" \
+          --parameters 'commands=["cd /var/www/html/PHP && git pull origin master"]'
