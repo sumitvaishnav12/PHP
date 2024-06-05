@@ -20,7 +20,7 @@ jobs:
       env:
         SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
         EC2_USER: 'ec2-user'  # Update this to the username for your EC2 instance
-        EC2_HOST: '172.31.41.114'  # Replace with your EC2 instance's public DNS
+        EC2_HOST: 'ec2-13-235-27-24.ap-south-1.compute.amazonaws.com'  # Replace with your EC2 instance's public DNS
       run: |
         echo "${{ secrets.EC2_SSH_KEY }}" > key.pem
         chmod 600 key.pem
