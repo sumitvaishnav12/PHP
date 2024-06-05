@@ -3,10 +3,10 @@ name: CI/CD Pipeline for PHP
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
@@ -20,12 +20,12 @@ jobs:
       env:
         SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
         EC2_USER: 'ec2-user'  # Update this to the username for your EC2 instance
-        EC2_HOST: 'ec2-3-6-88-56.ap-south-1.compute.amazonaws.com'  # Replace with your EC2 instance's public DNS
+        EC2_HOST: '172.31.41.114'  # Replace with your EC2 instance's public DNS
       run: |
         echo "${{ secrets.EC2_SSH_KEY }}" > key.pem
         chmod 600 key.pem
         ssh -i key.pem -o StrictHostKeyChecking=no ${{ env.EC2_USER }}@${{ env.EC2_HOST }} << 'EOF'
-          cd /var/www/html  # Update this to the directory where your PHP app should be deployed
-          git pull origin main
+          cd /var/www/html/PHP  # Update this to the directory where your PHP app should be deployed
+          git pull origin master
           # Optional: run any other deployment commands, e.g., composer install if you're using Composer
         EOF
