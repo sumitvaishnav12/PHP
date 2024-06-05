@@ -16,17 +16,16 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-south-1
-        
-    - name: Deploy via SSM  
+    - name: Deploy via SSH
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+        EC2_USER: 'ubuntu'  # Update this to the username for your EC2 instance
+        EC2_HOST: '13.235.27.24'  # Replace with your EC2 instance's public DNS or IP address
       run: |
-        instance_id=$(aws ssm describe-instance-information --query "InstanceInformationList[0].InstanceId" --output text)
-        aws ssm send-command \
-          --document-name "AWS-RunShellScript" \
-          --targets "Key=instanceids,Values=$instance_id" \
-          --parameters 'commands=["cd /var/www/html/PHP && git pull origin master"]'
+        echo "$SSH_PRIVATE_KEY" > key.pem
+        chmod 600 key.pem
+        ssh -i key.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
+          cd /var/www/html/PHP  # Update this to the directory where your PHP app should be deployed
+          git pull origin master
+          # Optional: run any other deployment commands, e.g., composer install if you're using Composer
+        EOF
