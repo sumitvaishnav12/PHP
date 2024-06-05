@@ -28,3 +28,4 @@ jobs:
           # Update this to the directory where your PHP app should be deployed
           cd /var/www/html/PHP &&
           git pull origin master
+          '
