@@ -26,6 +26,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i key ${EC2_USER}@${EC2_HOST} '
 
           # Update this to the directory where your PHP app should be deployed
-          cd /var/www/html/PHP &&
+          sudo su && cd /var/www/html/PHP &&
           git pull origin master
           '
