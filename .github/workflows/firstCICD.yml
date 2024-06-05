@@ -22,10 +22,9 @@ jobs:
         EC2_USER: 'ubuntu'  # Update this to the username for your EC2 instance
         EC2_HOST: '13.235.27.24'  # Replace with your EC2 instance's public DNS or IP address
       run: |
-        echo "$SSH_PRIVATE_KEY" > key.pem
-        chmod 600 key.pem
-        ssh -i key.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
-          cd /var/www/html/PHP  # Update this to the directory where your PHP app should be deployed
+        echo "$SSH_PRIVATE_KEY" > key && chmod 600 key
+          ssh -o StrictHostKeyChecking=no -i key ${EC2_USER}@${EC2_HOST} '
+
+          # Update this to the directory where your PHP app should be deployed
+          cd /var/www/html/PHP &&
           git pull origin master
-          # Optional: run any other deployment commands, e.g., composer install if you're using Composer
-        EOF
